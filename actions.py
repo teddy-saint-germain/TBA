@@ -55,6 +55,18 @@ class Actions:
 
         # Get the direction from the list of words.
         direction = list_of_words[1]
+        if direction in ['nord','Nord','n','NORD','north']:
+            direction='N'
+        if direction in ['sud','Sud','s','SUD','south']:
+            direction='S'
+        if direction in ['est','Est','e','EST','east']:
+            direction='E'
+        if direction in ['ouest','Ouest','o','OUEST','west']:
+            direction='O'
+        if direction not in ['S','N','E','O']:
+            print("\n cette direction n'existe pas!")
+            print(game.player.current_room.get_long_description())
+            return False
         # Move the player in the direction specified by the parameter.
         player.move(direction)
         return True
@@ -137,3 +149,213 @@ class Actions:
             print("\t- " + str(command))
         print()
         return True
+    
+
+
+    def up(game, list_of_words, number_of_parameters): 
+        player = game.player
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        # Get the direction from the list of words.
+        direction =list_of_words[0]
+        # Move the player in the direction specified by the parameter.
+        player.move(direction)
+        return True
+
+
+    
+    def down(game, list_of_words, number_of_parameters): 
+        player = game.player
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        # Get the direction from the list of words.
+        direction =list_of_words[0]
+        # Move the player in the direction specified by the parameter.
+        player.move(direction)
+        return True
+    
+
+    def back(game, list_of_words, number_of_parameters): 
+        player = game.player
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+    
+        
+        # Move the player in the direction specified by the parameter.
+    
+        
+        if player.historic[-1] is None:
+            print("\n vous ne pouvez pas revenir en arrière !\n")
+            return False
+        
+        player.current_room = player.historic[-1]
+        player.historic.pop()
+        player.historic_name.pop()
+        # Set the current room to the next room.
+        print(player.current_room.get_long_description())
+        return True
+    
+
+    def inventaire(game,list_of_words,number_of_parameters):
+        player = game.player
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+        
+        if player.inventary=={}:
+            print("\n votre inventaire est vide !\n")
+            return False
+        
+        print("\nVoici votre inventaire:")
+        for obj in player.inventary_name:
+            print("\t- " + str(obj))
+        print()
+        return True
+    
+    def look(game,list_of_words,number_of_parameters):
+        player=game.player
+        room =player.current_room
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+        
+        if room.inventary !={}:
+            print("\non voit:")
+            for obj in room.inventary.values():
+                print(str(obj))
+            print()
+
+            if room.pnj!={}:
+                print("\net il y a:")
+                for obj in room.pnj.values():
+                    print(str(obj))
+                print()     
+            else:       
+                print("\n il n y a personne")
+                return False
+        
+        else:
+
+            if room.pnj!={}:
+                print("\net il y a:")
+                for obj in room.pnj.values():
+                    print(str(obj))
+                print()     
+            else:       
+                print("\n il n y a pas d'objet et il y a personne")
+                return False
+        return True
+            
+          
+    
+    def take(game, list_of_words, number_of_parameters): 
+        player = game.player
+        room= game.player.current_room
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+    
+    
+        
+        if room.inventary =={}:
+            print("\n il n'y a rien !\n")
+            return False
+        
+        item = list_of_words[1]
+        if item not in room.inventary.keys():
+            print("\n cette objets n'est pas dans cette piece!\n")
+            return False
+
+
+        player.get_inventary(game,item)
+        room.inventary.pop(f"{item}")
+        
+        return True
+    
+
+
+    def drop(game, list_of_words, number_of_parameters): 
+        player = game.player
+        room= game.player.current_room
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+    
+    
+        
+        if player.inventary =={}:
+            print("\n il n'y a rien dans votre inventaire !\n")
+            return False
+        
+        item = list_of_words[1]
+        if item not in player.inventary.keys():
+            print("\n cette objets n'est pas dans votre inventaire!\n")
+            return False
+
+
+        room.get_inventary(game,item)
+        player.inventary.pop(f"{item}")
+        player.inventary_name.pop(f'{item.name}')
+        
+        return True
+    
+
+    def historic(game, list_of_words, number_of_parameters): 
+        player = game.player
+        l = len(list_of_words)
+        # If the number of parameters is incorrect, print an error message and return False.
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+    
+        
+        # Move the player in the direction specified by the parameter.
+    
+        
+        if player.historic_name==[]:
+            print("\n il n'y a pas d historique !\n")
+            return False
+        print("vous êtes deja aller dans ces endroit:")
+        for sal in player.historic_name:
+            print("\t- " + str(sal))
+        print()
+        
+    
+        
+        return True
+    
+
+
+
+    
